@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = BootexamineApplication.class)
 @AutoConfigureMockMvc
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -33,6 +33,12 @@ class BootexamineApplicationTests {
 
 	@Autowired
 	private DocumentRepository repository;
+
+	@Test
+	@Order(0)
+	void main() {
+		BootexamineApplication.main(new String[] {});
+	}
 
 	@Test
 	@Order(1)
