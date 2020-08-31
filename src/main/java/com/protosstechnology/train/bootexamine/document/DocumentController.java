@@ -3,7 +3,6 @@ package com.protosstechnology.train.bootexamine.document;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,23 +27,26 @@ public class DocumentController {
     }
 
     @PostMapping
-    public ResponseEntity save(@RequestBody Document document) {
-        Document result = repository.save(document);
-        if (result == null || result.getId() == null)
-            return ResponseEntity.badRequest().body(new Error(400, "Bad Request"));
-
+    public ResponseEntity save(@RequestBody DocumentDTO dto) {
+        Document entity = new Document();
+        entity.setDocumentNumber(dto.getDocumentNumber());
+        entity.setDescription(dto.getDescription());
+        Document result = repository.save(entity);
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@RequestBody Document document, @PathVariable Long id) {
+    public ResponseEntity update(@RequestBody DocumentDTO dto, @PathVariable Long id) {
         Optional<Document> resultOpt = repository.findById(id);
         if (!resultOpt.isPresent())
             return ResponseEntity.badRequest().body(new Error(400, "Bad Request"));
 
+        Document entity = new Document();
+        entity.setDocumentNumber(dto.getDocumentNumber());
+        entity.setDescription(dto.getDescription());
         Document result = resultOpt.get();
-        result.setDocumentNumber(document.getDocumentNumber());
-        result.setDescription(document.getDescription());
+        result.setDocumentNumber(dto.getDocumentNumber());
+        result.setDescription(dto.getDescription());
         repository.save(result);
         return ResponseEntity.ok(result);
     }
@@ -56,11 +58,6 @@ public class DocumentController {
             return ResponseEntity.badRequest().body(new Error(400, "Bad Request"));
 
         repository.deleteById(id);
-        Optional deletedOpt = repository.findById(id);
-        if (deletedOpt.isPresent())
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Error(500, "System Error"));
-
         return ResponseEntity.ok(new Error(200, "Deleted"));
     }
 
